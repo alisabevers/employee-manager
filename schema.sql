@@ -5,7 +5,7 @@ USE employee_manager_db;
 
 CREATE TABLE departments (
     dept_id INT NOT NULL,
-    name VARCHAR(30) NOT NULL PRIMARY KEY
+    dept_name VARCHAR(30) NOT NULL PRIMARY KEY
 );
 
 CREATE TABLE roles (
@@ -13,7 +13,7 @@ CREATE TABLE roles (
     job_title VARCHAR(30),
     salary INT NOT NULL DEFAULT 0,
     dept VARCHAR(30) NOT NULL,
-    FOREIGN KEY (dept) REFERENCES departments(name)
+    FOREIGN KEY (dept) REFERENCES departments(dept_name)
 );
 
 CREATE TABLE employees (

@@ -15,12 +15,12 @@ const db = mysql2.createConnection (
     password: process.env.PASSWORD,
     database: 'employee_manager_db'
   },
-  console.log(`You are now connected to the employee_manager_db database.`)
+  console.log(`You are now connected to the employee_manager_db database. \n\n 
+  Welcome to the Employee Tracker. \n`)
 );
 
+// This function runs the homeScreen. Functions to handle each option/selection are coded separately.
 function homeScreen() {
-  console.log('Welcome to the Employee Tracker');
-
   inquirer.prompt([
     {
         type: 'list',
@@ -55,4 +55,52 @@ function homeScreen() {
   });
 };
 
+// Handles when the user selects to View all Departments
+const viewDepts = () => {
+  db.query(`SELECT * FROM departments`, (err, rows) => {
+    if (err) {
+      throw err;
+    } else {
+      console.log('\n');
+      console.table(rows);
+      return homeScreen();
+    }
+  });
+};
+
+// Handles when the user selects to View all Roles
+const viewRoles = () => {
+  db.query(`SELECT * FROM roles`, (err, rows) => {
+    if (err) {
+      throw err;
+    } else {
+      console.log('\n');
+      console.table(rows);
+      return homeScreen();
+    }
+  });
+};
+
+// Handles when the user selects to View all Employees
+const viewEmployees = () => {
+  db.query
+    (`SELECT employee_id, first_name, last_name FROM employees;
+    SELECT job_title, salary FROM roles;
+    SELECT dept_name AS department FROM departments;
+    FROM employees
+    LEFT JOIN roles
+    ON employees.employee_id = roles.job_title`
+    // FROM employees JOIN roles ON employees.job_title_id = roles.job_title
+    , (err, rows) => {
+      if (err) {
+        throw err;
+      } else {
+        console.log('\n');
+        console.table(rows);
+        return homeScreen();
+      }
+    });
+};
+
+// calls the main function to fun the app
 homeScreen();
