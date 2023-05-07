@@ -24,3 +24,7 @@ CREATE TABLE employees (
     salary INT NOT NULL DEFAULT 0
 );
 
+CREATE TABLE managers (
+    manager VARCHAR(30) PRIMARY KEY
+);
+

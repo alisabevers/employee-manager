@@ -26,3 +26,10 @@ VALUES
     ('Malia', 'Brown', 'Accountant', 'Finance', '125000'),
     ('Sarah', 'Lourd', 'Legal Team Lead', 'Legal', '250000'),
     ('Tom', 'Allen', 'Lawyer', 'Legal', '190000');
+
+INSERT INTO managers (manager)
+VALUES
+    ('John Doe'),
+    ('Ashley Rodriguez'),
+    ('Kunal Singh'),
+    ('Sarah Lourd');
