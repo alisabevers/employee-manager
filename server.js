@@ -84,14 +84,9 @@ const viewRoles = () => {
 // Handles when the user selects to View all Employees
 const viewEmployees = () => {
   db.query
-    (`SELECT employee_id, first_name, last_name FROM employees;
-    SELECT job_title, salary FROM roles;
-    SELECT dept_name AS department FROM departments;
-    FROM employees
-    LEFT JOIN roles
-    ON employees.employee_id = roles.job_title`
-    // FROM employees JOIN roles ON employees.job_title_id = roles.job_title
-    , (err, rows) => {
+    (`SELECT employees.employee_id, employees.first_name, employees.last_name, roles.role_id, roles.salary 
+    FROM employees 
+    JOIN roles ON employees.employee_id = roles.role_id`, (err, rows) => {
       if (err) {
         throw err;
       } else {
