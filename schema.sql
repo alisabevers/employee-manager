@@ -14,7 +14,8 @@ CREATE TABLE roles (
     role_id INT AUTO_INCREMENT PRIMARY KEY,
     job_title VARCHAR(30),
     salary INT NOT NULL DEFAULT 0,
-    dept VARCHAR(30) NOT NULL
+    dept_id INT,
+    CONSTRAINT fk_department FOREIGN KEY (dept_id) REFERENCES departments(dept_id) ON DELETE SET NULL
 );
 
 ALTER TABLE roles AUTO_INCREMENT = 1;

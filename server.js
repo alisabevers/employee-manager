@@ -126,5 +126,105 @@ const addDept = () => {
   })
 }
 
+const addRole = () => {
+  return inquirer.prompt([
+    {
+      type: 'input',
+      message: 'What is the name of the new role',
+      name: 'job_title',
+      validate: roleNameInput => {
+        if (roleNameInput) {
+          return true;
+        } else {
+          return false;
+        };
+      }
+    },
+    {
+      type: 'input',
+      message: 'What is the salary of the new role',
+      name: 'salary',
+      validate: salaryInput => {
+        if (salaryInput) {
+          return true;
+        } else {
+          return false;
+        };
+      }
+    },{
+      type: 'input',
+      message: 'What is the dept_id of the new role',
+      name: 'dept_id',
+      validate: deptIdInput => {
+        if (deptIdInput) {
+          return true;
+        } else {
+          return false;
+        };
+      }
+    }
+  ]).then(response => {
+    const params = [response.job_title, response.salary, response.dept_id];
+    db.query('INSERT INTO roles (job_title, salary, dept_id) VALUES(?)', [params], (err) => {
+      if (err) {
+        throw err;
+      } else {
+        console.log('Role added.');
+        return viewRoles();
+      }
+    })
+  })
+}
+
+const addEmployee = () => {
+  return inquirer.prompt([
+    {
+      type: 'input',
+      message: 'What is the first name of the new employee',
+      name: 'first_name',
+      validate: firstNameInput => {
+        if (firstNameInput) {
+          return true;
+        } else {
+          return false;
+        };
+      }
+    },
+    {
+      type: 'input',
+      message: 'What is the last name of the new employee',
+      name: 'last_name',
+      validate: lastNameInput => {
+        if (lastNameInput) {
+          return true;
+        } else {
+          return false;
+        };
+      }
+    },{
+      type: 'input',
+      message: 'What is the role_id of the new employee',
+      name: 'role_id',
+      validate: roleIdInput => {
+        if (roleIdInput) {
+          return true;
+        } else {
+          return false;
+        };
+      }
+    }
+  ]).then(response => {
+    const params = [response.first_name, response.last_name, response.role_id];
+    db.query('INSERT INTO employees (first_name, last_name, role_id) VALUES(?)', [params], (err) => {
+      if (err) {
+        throw err;
+      } else {
+        console.log('Employee added.');
+        return viewEmployees();
+      }
+    })
+  })
+}
+
 // calls the main function to fun the app
 homeScreen();
