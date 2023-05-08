@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const express = require('express');
 const mysql2 = require('mysql2');
+const { count } = require('console');
 const PORT = process.env.PORT || 3001;
 const app = express();
 require('dotenv').config();
@@ -32,6 +33,9 @@ function homeScreen() {
     switch (dbTables) {
       case 'View all departments':
         viewDepts();
+        break;
+      case 'Count of all departments':
+        countDepts();
         break;
       case 'View all roles':
         viewRoles();
@@ -68,6 +72,18 @@ const viewDepts = () => {
   });
 };
 
+const countDepts = () => {
+  db.query(`SELECT COUNT(*) FROM departments`, (err, rows) => {
+    if (err) {
+      throw err;
+    } else {
+      const count = rows[0]['COUNT(*)'] + 1;
+      console.log(count)
+      return count;
+    }
+  });
+};
+
 // Handles when the user selects to View all Roles
 const viewRoles = () => {
   db.query(`SELECT * FROM roles`, (err, rows) => {
@@ -82,6 +98,7 @@ const viewRoles = () => {
 };
 
 // Handles when the user selects to View all Employees
+// NEED TO ADD/EDIT: add department, and make the role_id equal the job title.
 const viewEmployees = () => {
   db.query
     (`SELECT employees.employee_id, employees.first_name, employees.last_name, roles.role_id, roles.salary 
@@ -96,6 +113,34 @@ const viewEmployees = () => {
       }
     });
 };
+
+const addDept = () => {
+  return inquirer.prompt([
+    {
+      type: 'input',
+      message: 'What is the name of the new department?',
+      name: 'dept_name',
+      validate: deptNameInput => {
+        if (deptNameInput) {
+          return true;
+        } else {
+          return false;
+        };
+      }
+    }
+  ]).then(response => {
+    const sql = `INSERT INTO departments (dept_name) VALUES (?);`;
+    const params = response.dept_name;
+    db.query(sql, [params], (err) => {
+      if (err) {
+        throw err;
+      } else {
+        console.log('Department added.');
+        return viewDepts();
+      }
+    })
+  })
+}
 
 // calls the main function to fun the app
 homeScreen();
