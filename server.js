@@ -34,9 +34,6 @@ function homeScreen() {
       case 'View all departments':
         viewDepts();
         break;
-      case 'Count of all departments':
-        countDepts();
-        break;
       case 'View all roles':
         viewRoles();
         break;
@@ -68,18 +65,6 @@ const viewDepts = () => {
       console.log('\n');
       console.table(rows);
       return homeScreen();
-    }
-  });
-};
-
-const countDepts = () => {
-  db.query(`SELECT COUNT(*) FROM departments`, (err, rows) => {
-    if (err) {
-      throw err;
-    } else {
-      const count = rows[0]['COUNT(*)'] + 1;
-      console.log(count)
-      return count;
     }
   });
 };
@@ -129,9 +114,8 @@ const addDept = () => {
       }
     }
   ]).then(response => {
-    const sql = `INSERT INTO departments (dept_name) VALUES (?);`;
     const params = response.dept_name;
-    db.query(sql, [params], (err) => {
+    db.query(`INSERT INTO departments (dept_name) VALUES (?);`, [params], (err) => {
       if (err) {
         throw err;
       } else {
