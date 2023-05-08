@@ -86,9 +86,9 @@ const viewRoles = () => {
 // NEED TO ADD/EDIT: add department, and make the role_id equal the job title.
 const viewEmployees = () => {
   db.query
-    (`SELECT employees.employee_id, employees.first_name, employees.last_name, roles.role_id, roles.salary 
+    (`SELECT employees.employee_id, employees.first_name, employees.last_name, roles.job_title, roles.salary 
     FROM employees 
-    JOIN roles ON employees.employee_id = roles.role_id`, (err, rows) => {
+    LEFT JOIN roles ON employees.role_id = roles.role_id`, (err, rows) => {
       if (err) {
         throw err;
       } else {
