@@ -1,9 +1,8 @@
 const inquirer = require('inquirer');
 const express = require('express');
 const mysql2 = require('mysql2');
-const { count } = require('console');
-const PORT = process.env.PORT || 3001;
 const app = express();
+
 require('dotenv').config();
 
 app.use(express.urlencoded({ extended: false }));
@@ -83,10 +82,9 @@ const viewRoles = () => {
 };
 
 // Handles when the user selects to View all Employees
-// NEED TO ADD/EDIT: add department, and make the role_id equal the job title.
 const viewEmployees = () => {
   db.query
-    (`SELECT employees.employee_id, employees.first_name, employees.last_name, roles.job_title, roles.salary 
+    (`SELECT employees.employee_id, employees.first_name, employees.last_name, roles.job_title, roles.salary
     FROM employees 
     LEFT JOIN roles ON employees.role_id = roles.role_id`, (err, rows) => {
       if (err) {
@@ -99,19 +97,13 @@ const viewEmployees = () => {
     });
 };
 
+// Handles when the user selects to Add a Department
 const addDept = () => {
   return inquirer.prompt([
     {
       type: 'input',
       message: 'What is the name of the new department?',
       name: 'dept_name',
-      validate: deptNameInput => {
-        if (deptNameInput) {
-          return true;
-        } else {
-          return false;
-        };
-      }
     }
   ]).then(response => {
     const params = response.dept_name;
@@ -126,42 +118,23 @@ const addDept = () => {
   })
 }
 
+// Handles when the user selects to Add a new Role
 const addRole = () => {
   return inquirer.prompt([
     {
       type: 'input',
-      message: 'What is the name of the new role',
-      name: 'job_title',
-      validate: roleNameInput => {
-        if (roleNameInput) {
-          return true;
-        } else {
-          return false;
-        };
-      }
+      message: 'What is the name of the new role?',
+      name: 'job_title'
     },
     {
       type: 'input',
-      message: 'What is the salary of the new role',
-      name: 'salary',
-      validate: salaryInput => {
-        if (salaryInput) {
-          return true;
-        } else {
-          return false;
-        };
-      }
-    },{
+      message: 'What is the salary of the new role?',
+      name: 'salary'
+    },
+    {
       type: 'input',
-      message: 'What is the dept_id of the new role',
-      name: 'dept_id',
-      validate: deptIdInput => {
-        if (deptIdInput) {
-          return true;
-        } else {
-          return false;
-        };
-      }
+      message: 'What is the dept_id of the new role?',
+      name: 'dept_id'
     }
   ]).then(response => {
     const params = [response.job_title, response.salary, response.dept_id];
@@ -176,42 +149,23 @@ const addRole = () => {
   })
 }
 
+// Handles when the user selects to Add an employee
 const addEmployee = () => {
   return inquirer.prompt([
     {
       type: 'input',
-      message: 'What is the first name of the new employee',
-      name: 'first_name',
-      validate: firstNameInput => {
-        if (firstNameInput) {
-          return true;
-        } else {
-          return false;
-        };
-      }
+      message: 'What is the new employee\'s first name?',
+      name: 'first_name'
     },
     {
       type: 'input',
-      message: 'What is the last name of the new employee',
-      name: 'last_name',
-      validate: lastNameInput => {
-        if (lastNameInput) {
-          return true;
-        } else {
-          return false;
-        };
-      }
-    },{
+      message: 'What is the new employee\'s last name?',
+      name: 'last_name'
+    },
+    {
       type: 'input',
-      message: 'What is the role_id of the new employee',
-      name: 'role_id',
-      validate: roleIdInput => {
-        if (roleIdInput) {
-          return true;
-        } else {
-          return false;
-        };
-      }
+      message: 'What is the new employee\'s role_id?',
+      name: 'role_id'
     }
   ]).then(response => {
     const params = [response.first_name, response.last_name, response.role_id];
@@ -225,6 +179,53 @@ const addEmployee = () => {
     })
   })
 }
+
+// Handles when the user selects to Update an employee
+const updateEmployeeRole = () => {
+  db.query(`SELECT first_name, last_name, employee_id FROM employees`, (err, rows) => {
+    if (err) {
+      throw err;
+    }
+    const employees = rows.map(({ first_name, last_name, employee_id }) => ({name: `${first_name} ${last_name}`, value: employee_id}));
+    inquirer.prompt([
+      {
+        type: 'list',
+        message: 'Which employee\'s role would you like to update?',
+        name: 'employee',
+        choices: employees
+      }
+    ]).then(employeeResponse => {
+      const employee = employeeResponse.employee;
+      const params = [employee];
+      db.query(`SELECT job_title, role_id FROM roles`, (err, rows) => {
+        if (err) {
+          throw err;
+        }
+          const roles = rows.map(({ job_title, role_id}) => ({ name: job_title, value: role_id }));
+          inquirer.prompt([
+            {
+              type: 'list',
+              message: 'What is the role_id for the employee?',
+              name: 'newRole',
+              choices: roles
+            }
+          ]).then(rolesResponse => {
+            const role = rolesResponse.role;
+            params.unshift(role);
+            db.query(`UPDATE employees
+            SET role_id = ?
+            WHERE role_id = ?`, params, (err) => {
+              if (err) {
+                throw err;
+              }
+              console.log('Employee role updated');
+              return viewEmployees();
+            });
+          });
+      });
+    });
+  });
+};
 
 // calls the main function to fun the app
 homeScreen();
