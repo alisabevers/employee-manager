@@ -209,8 +209,8 @@ const updateEmployeeRole = () => {
               name: 'newRole',
               choices: roles
             }
-          ]).then(rolesResponse => {
-            const role = rolesResponse.role;
+          ]).then(newRole => {
+            const role = newRole.role;
             params.unshift(role);
             db.query(`UPDATE employees
             SET role_id = ?
